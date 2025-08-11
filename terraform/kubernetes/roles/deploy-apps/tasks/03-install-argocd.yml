@@ -1,0 +1,61 @@
+---
+- name: Create argo-cd namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: argocd
+    state: present
+    kubeconfig: "{{ kube_config_file }}"
+
+- name: Install argo-cd
+  ansible.builtin.get_url:
+    url: "{{ argocd_url }}"
+    dest: /tmp/install.yaml
+    mode: "0644"
+
+- name: Apply argo-cd manifest
+  kubernetes.core.k8s:
+    state: present
+    src: /tmp/install.yaml
+    namespace: argocd
+    kubeconfig: "{{ kube_config_file }}"
+
+- name: Change the argocd-server service type to LoadBalancer
+  kubernetes.core.k8s:
+    state: present
+    namespace: argocd
+    kind: Service
+    api_version: v1
+    name: argocd-server
+    merge_type: strategic-merge
+    definition:
+      spec:
+        type: LoadBalancer
+    kubeconfig: "{{ kube_config_file }}"
+
+- name: Install argocd cli
+  block:
+    - name: Get latest Argo CD version
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/argoproj/argo-cd/releases/latest
+        return_content: yes
+      register: argocd_release_info
+
+    - name: Extract tag name (version)
+      ansible.builtin.set_fact:
+        argocd_version: "{{ argocd_release_info.json.tag_name }}"
+
+    - name: Download argocd binary
+      ansible.builtin.get_url:
+        url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-linux-amd64"
+        dest: "/tmp/argocd"
+        mode: "0755"
+
+    - name: Move argocd binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: "/tmp/argocd"
+        dest: "/usr/local/bin/argocd"
+        remote_src: yes
+        mode: "0755"
+      become: true
+      become_user: root

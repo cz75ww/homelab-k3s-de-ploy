@@ -1,0 +1,6 @@
+---
+- import_tasks: 01-metal-lb.yml
+- import_tasks: 02-gateway-api.yml
+- import_tasks: 03-install-argocd.yml
+- import_tasks: 04-apps-files.yml
+- import_tasks: 05-deploy-apps.yml

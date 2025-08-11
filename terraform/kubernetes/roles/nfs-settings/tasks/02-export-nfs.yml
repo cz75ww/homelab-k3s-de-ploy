@@ -1,0 +1,26 @@
+---
+- name: Install NFS server package on Ubuntu
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+    update_cache: yes
+
+- name: Add export entry to /etc/exports
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: /data/nfs/kubernetes/volumes "{{ item }}"(rw,sync,no_subtree_check,no_root_squash)
+    state: present
+    create: yes
+  loop:
+    - "{{ node01_ip }}"
+    - "{{ node02_ip }}"
+    #- "{{ controlplane_ip }}"
+- name: Export NFS shares
+  ansible.builtin.command:
+    cmd: exportfs -rav
+
+- name: Enable and start NFS server service
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+    enabled: yes

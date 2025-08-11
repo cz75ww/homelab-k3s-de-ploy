@@ -1,0 +1,10 @@
+---
+- name: Add taints to controlplane
+  kubernetes.core.k8s_taint:
+    kubeconfig: "{{ kube_config_file }}"
+    state: present
+    name: controlplane
+    taints:
+      - key: kubernetes.io/hostname
+        value: controlplane
+        effect: NoSchedule

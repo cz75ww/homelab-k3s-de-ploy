@@ -1,0 +1,26 @@
+- name: NFS set up
+  hosts: nfs-server
+  become: true
+  roles:
+    - nfs-settings
+
+- name: Build cluster kubernetes
+  hosts: controlplane
+  become: true
+  roles:
+    - cluster-setup
+
+- name: cluster nodes setup
+  hosts: nodes
+  become: true
+  roles:
+    - nodes-setup
+
+- name: Deploy applications
+  hosts: controlplane
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: true
+  become_user: ubuntu
+  roles:
+    - deploy-apps

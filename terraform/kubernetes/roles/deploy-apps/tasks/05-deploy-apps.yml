@@ -1,0 +1,9 @@
+---
+- name: deploy linkding app
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ homelab_dir }}/{{ item }}"
+    namespace: argocd
+    kubeconfig: "{{ kube_config_file }}"
+  loop:
+    - linking-app.yaml

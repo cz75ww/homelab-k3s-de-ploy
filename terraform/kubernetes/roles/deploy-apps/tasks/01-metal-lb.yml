@@ -1,0 +1,43 @@
+---
+- name: Download MetalLB manifest
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}/config/manifests/metallb-native.yaml"
+    dest: /tmp/metallb-native.yaml
+    mode: "0644"
+
+- name: Apply MetalLB manifest
+  kubernetes.core.k8s:
+    state: present
+    src: /tmp/metallb-native.yaml
+
+- name: Wait for MetalLB pods to be running
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: metallb-system
+  register: metallb_pods
+  until: metallb_pods.resources | selectattr('status.phase', 'equalto', 'Running') | list | length == metallb_pods.resources | length
+  retries: 10
+  delay: 15
+
+- name: Create MetalLB IPAddressPool
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        namespace: metallb-system
+        name: my-ip-pool
+      spec:
+        addresses:
+          - "{{ metallb_ip_address }}"
+
+- name: Create MetalLB L2Advertisement
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        namespace: metallb-system
+        name: l2-advertisement

@@ -1,0 +1,67 @@
+---
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: controlplane
+
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Ensure apt-transport-https is installed
+  ansible.builtin.apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
+
+- name: Install cluster without Traefik
+  block:
+    - name: Download K3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io
+        dest: /tmp/install_k3s.sh
+        mode: "0755"
+
+    - name: Run install script with options
+      ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server --disable traefik
+
+- name: Create .kube directory for the ubuntu user
+  ansible.builtin.file:
+    path: "/home/ubuntu/.kube"
+    state: directory
+    mode: "0755"
+    owner: "ubuntu"
+    group: "ubuntu"
+
+- name: Save kubeconfig to ~/.kube/config
+  ansible.builtin.shell: "k3s kubectl config view --raw"
+  register: kubeconfig_output
+
+- name: Write kubeconfig to file
+  ansible.builtin.copy:
+    dest: "/home/ubuntu/.kube/config"
+    content: "{{ kubeconfig_output.stdout }}"
+    owner: "ubuntu"
+    group: "ubuntu"
+    mode: "0600"
+
+- name: Use kubectl with KUBECONFIG set
+  ansible.builtin.shell: kubectl get nodes
+  environment:
+    KUBECONFIG: "/home/ubuntu/.kube/config"
+
+- name: Add KUBECONFIG and kubectl alias lines to bash profile
+  ansible.builtin.lineinfile:
+    path: "/home/ubuntu/.bashrc"
+    line: "{{ item }}"
+    state: present
+    insertafter: EOF
+    create: yes
+    owner: "ubuntu"
+    group: "ubuntu"
+    mode: "0644"
+  loop:
+    - "export KUBECONFIG=$HOME/.kube/config"
+    - "alias k=kubectl"
+    - "complete -o default -F __start_kubectl k"
+    - "source <(kubectl completion bash)"

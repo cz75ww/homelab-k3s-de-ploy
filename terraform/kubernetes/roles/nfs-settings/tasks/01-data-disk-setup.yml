@@ -1,0 +1,69 @@
+---
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: nfs-server
+
+- name: Get the free disks
+  ansible.builtin.shell: |
+    lsblk -d -o NAME,TYPE,SIZE,MODEL | grep disk | while read -r diskline; do
+    disk="/dev/$(echo $diskline | awk '{print $1}')"
+    # Check if the disk has partitions
+    parts=$(lsblk $disk -n -o NAME | wc -l)
+      if [[ "$parts" -eq 1 ]]; then
+        # Check if it has a filesystem (should be empty), also check for mountpoint (should be empty)
+        fs=$(lsblk -no FSTYPE $disk)
+        mnt=$(lsblk -no MOUNTPOINT $disk)
+        if [[ -z "$fs" && -z "$mnt" ]]; then
+            echo "$disk"
+        fi
+      fi
+    done
+  args:
+    executable: /bin/bash
+  register: free_disks
+  changed_when: false
+
+- name: Get partition info on all free disks
+  community.general.parted:
+    device: "{{ item }}"
+  register: parted_info
+  changed_when: false
+  loop: "{{ free_disks.stdout_lines }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Create a new primary partition on all free disks
+  community.general.parted:
+    device: "{{ item }}"
+    number: 1
+    state: present
+    fs_type: ext4
+  loop: "{{ free_disks.stdout_lines }}"
+  when: >
+    parted_info.results[loop.index0].partitions is not defined or
+    (parted_info.results[loop.index0].partitions | map(attribute='num') | list) is not defined or
+    1 not in parted_info.results[loop.index0].partitions | map(attribute='num') | list
+  loop_control:
+    label: "{{ item }}"
+
+- name: Format partition as ext4 if needed
+  community.general.filesystem:
+    fstype: ext4
+    dev: "{{ item }}1"
+  loop: "{{ free_disks.stdout_lines }}"
+  loop_control:
+    label: "{{ item }}1"
+
+- name: Ensure mount directory exists
+  ansible.builtin.file:
+    path: /data/nfs/kubernetes/volumes
+    state: directory
+    mode: "0755"
+
+- name: Mount the partition {{ free_disks.stdout }} at
+  ansible.builtin.mount:
+    path: /data/nfs/kubernetes/volumes
+    src: "{{ free_disks.stdout }}1"
+    fstype: ext4
+    opts: defaults
+    state: mounted

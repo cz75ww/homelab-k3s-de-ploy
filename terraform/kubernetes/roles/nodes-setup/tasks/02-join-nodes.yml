@@ -1,0 +1,14 @@
+---
+- name: Get K3s node token from controlplane
+  ansible.builtin.command: sudo cat /var/lib/rancher/k3s/server/node-token
+  register: TOKEN
+  delegate_to: "{{ controlplane_ip }}"
+  become: true
+  become_user: root
+  run_once: true
+
+- name: Assign nodes to the cluster
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | K3S_URL=https://"{{ controlplane_ip }}":6443 K3S_TOKEN={{ TOKEN.stdout }} sh -
+  args:
+    executable: /bin/sh

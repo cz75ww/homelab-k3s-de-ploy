@@ -1,0 +1,26 @@
+---
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Install required NFS packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nfs-common
+    - nfs-kernel-server
+
+- name: Ensure mount directory exists
+  ansible.builtin.file:
+    path: "{{ mount_point }}"
+    state: directory
+
+- name: Mount NFS share
+  ansible.posix.mount:
+    src: "{{ nfs_server }}:{{ nfs_volume }}"
+    path: "{{ mount_point }}"
+    fstype: nfs
+    opts: rw,sync,hard
+    state: mounted
