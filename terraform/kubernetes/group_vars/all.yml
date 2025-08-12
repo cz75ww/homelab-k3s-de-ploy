@@ -1,19 +1,28 @@
 metallb_version: v0.15.2
+metallb_url: "https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}/config/manifests/metallb-native.yaml"
 
 controlplane_ip: "192.168.122.100"
 node01_ip: "192.168.122.110"
 node02_ip: "192.168.122.120"
 metallb_ip_address: "192.168.122.240-192.168.122.250"
+nfs_server: "192.168.122.130"
 
 nfs_volume: "/data/nfs/kubernetes/volumes"
 mount_point: "/opt/kubernetes/volumes"
-
-nfs_server: "192.168.122.130"
-
 home_dir: "/home/ubuntu"
-
 homelab_dir: "{{ home_dir }}/homelab"
 
 kube_config_file: "{{ home_dir }}/.kube/config"
 
 argocd_url: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+argocd_cli_url: "https://api.github.com/repos/argoproj/argo-cd/releases/latest"
+argocd_bin_url: "https://github.com/argoproj/argo-cd/releases/download/"
+
+helm_url: "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+k9s_url: "https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_amd64.deb"
+k3s_url: "https://get.k3s.io"
+
+api_gtw_version: "v1.6.2"
+api_gtw_url: "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref={{ api_gtw_version}}"
+api_gtw_fabric_url: "https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/crds.yaml"
+api_gtw_deploy_url: "https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/default/deploy.yaml"

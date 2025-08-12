@@ -1,7 +1,7 @@
 ---
 - name: Apply Gateway API CRDs using kustomize output
   ansible.builtin.shell: |
-    kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" > /tmp/nginx-gateway-api-crds.yaml
+    kubectl kustomize "{{ api_gtw_url }}" > /tmp/nginx-gateway-api-crds.yaml
   environment:
     KUBECONFIG: "{{ kube_config_file }}"
 
@@ -15,10 +15,10 @@
   kubernetes.core.k8s:
     kubeconfig: "{{ kube_config_file }}"
     state: present
-    src: https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/crds.yaml
+    src: "{{ api_gtw_fabric_url }}"
 
 - name: Deploy the nginx-gateway-fabric resources
   kubernetes.core.k8s:
     kubeconfig: "{{ kube_config_file }}"
     state: present
-    src: https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/default/deploy.yaml
+    src: "{{ api_gtw_deploy_url }}"

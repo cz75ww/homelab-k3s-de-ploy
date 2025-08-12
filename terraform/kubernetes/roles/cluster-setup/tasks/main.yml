@@ -1,4 +1,3 @@
 ---
 - import_tasks: 01-install-cluster.yml
 - import_tasks: 02-install-packages.yml
-- import_tasks: 03-taints.yml

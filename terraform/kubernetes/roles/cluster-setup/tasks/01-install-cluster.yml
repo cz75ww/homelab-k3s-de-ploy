@@ -16,14 +16,8 @@
 
 - name: Install cluster without Traefik
   block:
-    - name: Download K3s install script
-      ansible.builtin.get_url:
-        url: https://get.k3s.io
-        dest: /tmp/install_k3s.sh
-        mode: "0755"
-
     - name: Run install script with options
-      ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server --disable traefik
+      ansible.builtin.shell: curl -sfL "{{ k3s_url }}" | sh -s - server --disable traefik
 
 - name: Create .kube directory for the ubuntu user
   ansible.builtin.file:
@@ -50,18 +44,29 @@
   environment:
     KUBECONFIG: "/home/ubuntu/.kube/config"
 
-- name: Add KUBECONFIG and kubectl alias lines to bash profile
-  ansible.builtin.lineinfile:
-    path: "/home/ubuntu/.bashrc"
-    line: "{{ item }}"
-    state: present
-    insertafter: EOF
-    create: yes
-    owner: "ubuntu"
-    group: "ubuntu"
-    mode: "0644"
-  loop:
-    - "export KUBECONFIG=$HOME/.kube/config"
-    - "alias k=kubectl"
-    - "complete -o default -F __start_kubectl k"
-    - "source <(kubectl completion bash)"
+- name: Add KUBECONFIG and kubectl alias block to .bashrc profile
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.bashrc
+    marker: "# {mark} ANSIBLE KUBECTL CONFIG"
+    block: |
+      export KUBECONFIG=$HOME/.kube/config
+      alias k=kubectl
+      complete -o default -F __start_kubectl k
+      source <(kubectl completion bash)
+
+# - name: Add KUBECONFIG and kubectl alias lines to bash profile
+#   ansible.builtin.lineinfile:
+#     path: "/home/ubuntu/.bashrc"
+#     line: "{{ item }}"
+#     state: present
+#     insertafter: EOF
+#     create: yes
+#     owner: "ubuntu"
+#     group: "ubuntu"
+#     mode: "0644"
+#   loop:
+#     - "export KUBECONFIG=$HOME/.kube/config"
+#     - "alias k=kubectl"
+#     - "complete -o default -F __start_kubectl k"
+#     - "source <(kubectl completion bash)"
+

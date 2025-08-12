@@ -1,11 +1,11 @@
 ---
 - name: Install helm
   ansible.builtin.shell: |
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    curl "{{ helm_url }}" | bash
 
 - name: Download k9s .deb package
   ansible.builtin.shell: |
-    curl -L -o k9s_linux_amd64.deb https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_amd64.deb
+    curl -L -o k9s_linux_amd64.deb "{{ k9s_url }}"
   args:
     chdir: /tmp
     creates: /tmp/k9s_linux_amd64.deb
