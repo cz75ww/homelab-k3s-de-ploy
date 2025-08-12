@@ -33,7 +33,7 @@ resource "libvirt_volume" "nfs-server_rootfs" {
   name           = "nfs-server-22.04-rootfs.qcow2"
   pool           = libvirt_pool.nfs-server.name
   base_volume_id = libvirt_volume.nfs-server_base.id
-  size           = 10737418240  # 10 GB
+  size           = 10737418240 # 10 GB
   format         = "qcow2"
 }
 
@@ -41,7 +41,7 @@ resource "libvirt_volume" "nfs-server_rootfs" {
 resource "libvirt_volume" "nfs-server_data" {
   name   = "nfs-server-data.qcow2"
   pool   = libvirt_pool.nfs-server.name
-  size   = 10737418240  # 10 GB
+  size   = 10737418240 # 10 GB
   format = "qcow2"
 }
 

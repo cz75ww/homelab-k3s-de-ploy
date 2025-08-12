@@ -5,7 +5,7 @@ resource "libvirt_pool" "controlplane" {
     path = "/home/fpsouza/class/vm-settings/disks/controlplane"
   }
 
-   depends_on = [
+  depends_on = [
     libvirt_domain.domain-nfs-server
   ]
 }
@@ -27,7 +27,7 @@ resource "libvirt_volume" "controlplane_rootfs" {
   name           = "controlplane-22.04-rootfs.qcow2"
   pool           = libvirt_pool.controlplane.name
   base_volume_id = libvirt_volume.controlplane_base.id
-  size           = 10737418240  # 10 GB
+  size           = 10737418240 # 10 GB
   format         = "qcow2"
 
   depends_on = [
@@ -50,8 +50,8 @@ resource "libvirt_cloudinit_disk" "commoninit" {
   network_config = data.template_file.net_controlplane_cfg.rendered
   pool           = libvirt_pool.controlplane.name
 
- 
- 
+
+
 
 
 

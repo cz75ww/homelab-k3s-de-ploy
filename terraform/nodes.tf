@@ -1,7 +1,7 @@
 # Deploy worker nodes
 resource "libvirt_pool" "vm_pool" {
-  name   = "vmpool"
-  type   = "dir"
+  name = "vmpool"
+  type = "dir"
   target {
     path = "/home/fpsouza/class/vm-settings/disks/nodes"
   }
@@ -29,7 +29,7 @@ resource "libvirt_volume" "rootfs" {
   name           = "${each.key}-22.04-rootfs.qcow2"
   pool           = libvirt_pool.vm_pool.name
   base_volume_id = libvirt_volume.base_img[each.key].id
-  size           = 10737418240  # 10 GB
+  size           = 10737418240 # 10 GB
   format         = "qcow2"
 
   depends_on = [
@@ -64,9 +64,9 @@ resource "libvirt_cloudinit_disk" "init" {
 resource "libvirt_domain" "node" {
   for_each = var.nodes
 
-  name   = each.value.hostname
-  memory = 2048
-  vcpu   = 1
+  name      = each.value.hostname
+  memory    = 2048
+  vcpu      = 1
   cloudinit = libvirt_cloudinit_disk.init[each.key].id
 
   network_interface {
@@ -95,7 +95,7 @@ resource "libvirt_domain" "node" {
     autoport    = true
   }
 
-   depends_on = [
+  depends_on = [
     libvirt_domain.domain-nfs-server,
     libvirt_domain.domain-controlplane
   ]

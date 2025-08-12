@@ -63,8 +63,8 @@ $ terraform fmt
 $ terraform validate
 
 # See a preview and in case of no issue apply it
-$ terraform plan -out k3s.plam
-$ terraform apply aws-k3s.plan
+$ terraform plan -out k3s.plan
+$ terraform apply k3s.plan
 
 # To destroy the environment
 $ terraform destroy --auto-approve

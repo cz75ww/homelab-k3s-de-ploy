@@ -7,7 +7,7 @@ variable "controlplane_ip_address" {
 variable "nfs-server_ip_address" {
   type        = string
   default     = "192.168.122.130"
-  description ="The IP address of the nfs server."
+  description = "The IP address of the nfs server."
 }
 
 
@@ -16,7 +16,7 @@ variable "nodes" {
   type = map(object({
     hostname  = string
     static_ip = string
-    net_cfg   = string   # Just the relative filename
+    net_cfg   = string # Just the relative filename
   }))
   default = {
     node01 = {

@@ -68,9 +68,9 @@ EOT
 # Generate dynamic Ansible inventory file
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tpl", {
-    nfs-server = var.nfs-server_ip_address
+    nfs-server   = var.nfs-server_ip_address
     controlplane = var.controlplane_ip_address
-    nodes = var.nodes
+    nodes        = var.nodes
   })
   filename = "${path.module}/kubernetes/hosts.ini"
 }
@@ -79,7 +79,7 @@ resource "local_file" "ansible_inventory" {
 resource "null_resource" "running_ansible" {
   triggers = {
     # playbook_checksum = filesha1(var.playbook)
-    always_run        = timestamp()
+    always_run = timestamp()
   }
   provisioner "local-exec" {
     command = "ansible-playbook -i ${local_file.ansible_inventory.filename} --private-key ${var.key_path} -u ubuntu --ssh-extra-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ${var.playbook} -vv"
