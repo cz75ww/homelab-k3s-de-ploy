@@ -41,11 +41,31 @@ This automation provisions and deploys a Kubernetes (K3s) cluster with 3 nodes, 
 
 * [TerraformAnsible](https://www.hashicorp.com/resources/ansible-terraform-better-together) - Good page and video explaining why Ansible and HashiCorp are  better together.
 
-
-## Terraform
-
-
 ##### As a good practice, keep your terraform.tfstate file in a backend - [TerraformBackend](https://developer.hashicorp.com/terraform/language/backend)
 
-## Ansible
-#### To install the applications, packages and apply the following settings:
+## Setup
+#### To run this project, perform the command lines:
+ ```
+#Clone the repository
+$ git clone https://github.com/cz75ww/homelab-k3s-deploy.git
+
+
+# go to terraform folder
+$ cd terraform
+
+# Download the Plugs 
+$ terraform init
+
+# Rewrite Terraform configuration files to a canonical format and style
+$ terraform fmt 
+
+# Make sure if your syntax is correct
+$ terraform validate
+
+# See a preview and in case of no issue apply it
+$ terraform plan -out k3s.plam
+$ terraform apply aws-k3s.plan
+
+# To destroy the environment
+$ terraform destroy --auto-approve
+```
