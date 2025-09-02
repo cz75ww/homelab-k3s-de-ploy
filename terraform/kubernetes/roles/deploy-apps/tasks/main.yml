@@ -4,4 +4,5 @@
 - import_tasks: 03-install-argocd.yml
 - import_tasks: 04-taints.yml
 - import_tasks: 05-apps-files.yml
-- import_tasks: 06-deploy-apps.yml
+- import_tasks: 06-tls-certificate.yml
+- import_tasks: 07-deploy-apps.yml

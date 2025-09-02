@@ -1,0 +1,54 @@
+- name: Ensure TLS directory exists
+  ansible.builtin.file:
+    path: "{{ tls_dir }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Create the private key
+  community.crypto.openssl_privatekey:
+    path: "{{ tls_dir }}/tls.key"
+    size: 2048
+
+- name: Generate CSR
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ tls_dir }}/tls.key"
+    common_name: studyk8s.com
+    organization_name: studyk8s.com
+    digest: sha256
+    subject_alt_name:
+      - "DNS:studyk8s.com"
+  register: csr
+
+- name: Create self-signed certificate from CSR
+  community.crypto.x509_certificate:
+    path: "{{ tls_dir }}/tls.crt"
+    csr_content: "{{ csr.csr }}"
+    privatekey_path: "{{ tls_dir }}/tls.key"
+    provider: selfsigned
+    selfsigned_not_after: "+365d"
+
+- name: Slurp private key
+  slurp:
+    src: "{{ tls_dir }}/tls.key"
+  register: key_file
+
+- name: Slurp certificate
+  slurp:
+    src: "{{ tls_dir }}/tls.crt"
+  register: crt_file
+
+- name: Create TLS secret in Kubernetes
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-secret
+        namespace: linkding-ns
+      type: kubernetes.io/tls
+      data:
+        tls.key: "{{ key_file.content }}"
+        tls.crt: "{{ crt_file.content }}"

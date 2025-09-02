@@ -53,20 +53,3 @@
       alias k=kubectl
       complete -o default -F __start_kubectl k
       source <(kubectl completion bash)
-
-# - name: Add KUBECONFIG and kubectl alias lines to bash profile
-#   ansible.builtin.lineinfile:
-#     path: "/home/ubuntu/.bashrc"
-#     line: "{{ item }}"
-#     state: present
-#     insertafter: EOF
-#     create: yes
-#     owner: "ubuntu"
-#     group: "ubuntu"
-#     mode: "0644"
-#   loop:
-#     - "export KUBECONFIG=$HOME/.kube/config"
-#     - "alias k=kubectl"
-#     - "complete -o default -F __start_kubectl k"
-#     - "source <(kubectl completion bash)"
-
