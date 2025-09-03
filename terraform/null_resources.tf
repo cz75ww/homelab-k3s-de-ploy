@@ -82,7 +82,7 @@ resource "null_resource" "running_ansible" {
     always_run = timestamp()
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${local_file.ansible_inventory.filename} --private-key ${var.key_path} -u ubuntu --ssh-extra-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ${var.playbook} -vv"
+    command = "ansible-playbook -i ${local_file.ansible_inventory.filename} --private-key ${var.key_path} -u ubuntu --ssh-extra-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ${var.playbook}"
   }
   depends_on = [
     local_file.ansible_inventory,

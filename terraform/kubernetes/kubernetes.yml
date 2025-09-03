@@ -1,20 +1,58 @@
 - name: NFS set up
   hosts: nfs-server
   become: true
-  roles:
-    - nfs-settings
+  pre_tasks:
+    - name: Ensure nfs-kernel-server is installed
+      ansible.builtin.apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Check if NFS export already exists
+      ansible.builtin.command: exportfs -s
+      register: nfs_exports
+      changed_when: false
+
+  tasks:
+    - name: Run NFS settings role only if export not found
+      block:
+        - name: Include nfs-settings role
+          include_role:
+            name: nfs-settings
+      when: "'/data/nfs/kubernetes/volumes' not in nfs_exports.stdout"
 
 - name: Build cluster kubernetes
   hosts: controlplane
   become: true
-  roles:
-    - cluster-setup
+  pre_tasks:
+    - name: Check if k3s is installed
+      stat:
+        path: /usr/local/bin/k3s
+      register: k3s_binary
+
+  tasks:
+    - name: Run cluster setup roles only if k3s is not installed
+      block:
+        - name: Include cluster setup role
+          include_role:
+            name: cluster-setup
+      when: not k3s_binary.stat.exists
 
 - name: cluster nodes setup
   hosts: nodes
   become: true
-  roles:
-    - nodes-setup
+  pre_tasks:
+    - name: Check if k3s is installed on nodes
+      stat:
+        path: /usr/local/bin/k3s
+      register: k3s_binary
+
+  tasks:
+    - name: Run nodes setup roles only if k3s is not installed
+      block:
+        - name: Include nodes setup role
+          include_role:
+            name: nodes-setup
+      when: not k3s_binary.stat.exists
 
 - name: Deploy applications
   hosts: controlplane

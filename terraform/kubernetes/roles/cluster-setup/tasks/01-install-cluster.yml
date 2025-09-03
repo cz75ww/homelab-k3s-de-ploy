@@ -12,7 +12,6 @@
   ansible.builtin.apt:
     name: apt-transport-https
     state: present
-    update_cache: yes
 
 - name: Install cluster without Traefik
   block:

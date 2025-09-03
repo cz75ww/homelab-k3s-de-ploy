@@ -1,10 +1,4 @@
 ---
-- name: Install NFS server package on Ubuntu
-  ansible.builtin.apt:
-    name: nfs-kernel-server
-    state: present
-    update_cache: yes
-
 - name: Add export entry to /etc/exports
   ansible.builtin.lineinfile:
     path: /etc/exports
