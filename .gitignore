@@ -2,4 +2,4 @@
 terraform/terraform.tfstate*
 terraform/k3s.plan
 terraform/.*
-
+.gitignore
