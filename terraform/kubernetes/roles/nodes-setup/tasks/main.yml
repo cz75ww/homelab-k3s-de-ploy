@@ -1,4 +1,4 @@
 ---
-- import_tasks: 01-hostname.yml
-- import_tasks: 02-join-nodes.yml
-- import_tasks: 03-mount-nfs.yml
+- import_tasks: hostname.yml
+- import_tasks: join-nodes.yml
+- import_tasks: mount-nfs.yml

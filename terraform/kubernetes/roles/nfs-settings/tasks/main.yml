@@ -1,3 +1,3 @@
 ---
-- import_tasks: 01-data-disk-setup.yml
-- import_tasks: 02-export-nfs.yml
+- import_tasks: data-disk-setup.yml
+- import_tasks: export-nfs.yml
