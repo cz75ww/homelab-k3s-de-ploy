@@ -17,7 +17,7 @@
   register: metallb_pods
   until: metallb_pods.resources | selectattr('status.phase', 'equalto', 'Running') | list | length == metallb_pods.resources | length
   retries: 10
-  delay: 15
+  delay: 30
 
 - name: Create MetalLB IPAddressPool
   kubernetes.core.k8s:

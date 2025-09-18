@@ -1,0 +1,68 @@
+- name: Install OPA (Open Policy Agent) Gatekeeper
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kube_config_file }}"
+    state: present
+    src: "{{ opa_gatekeeper_url }}"
+
+- name: copy gatekeeper templates to remote
+  ansible.builtin.copy:
+    src: "gatekeeper-templates/{{ item }}"
+    dest: "{{ homelab_dir }}"
+    mode: "0755"
+    owner: ubuntu
+    group: ubuntu
+  loop:
+    - required-labels.yml
+    - mini-replicas.yml
+
+- name: copy gatekeeper policies to remote
+  ansible.builtin.copy:
+    src: "gatekeeper-policies/{{ item }}"
+    dest: "{{ homelab_dir }}"
+    mode: "0755"
+    owner: ubuntu
+    group: ubuntu
+  loop:
+    - namespaces.yml
+    - replicas.yml
+
+- name: Apply Gatekeeper ConstraintTemplates
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kube_config_file }}"
+    state: present
+    src: "{{ homelab_dir }}/{{ item }}"
+  loop:
+    - required-labels.yml
+    - mini-replicas.yml
+
+- name: Wait until ConstraintTemplates are created
+  kubernetes.core.k8s_info:
+    api_version: templates.gatekeeper.sh/v1
+    kind: ConstraintTemplate
+    namespace: gatekeeper-system
+  register: constraint_templates
+  until: constraint_templates.resources
+    | selectattr('status.created', 'defined')
+    | selectattr('status.created', 'equalto', true)
+    | list | length == constraint_templates.resources | length
+  retries: 10
+  delay: 15
+
+- name: Apply Gatekeeper Policies
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kube_config_file }}"
+    state: present
+    src: "{{ homelab_dir }}/{{ item }}"
+  loop:
+    - namespaces.yml
+    - replicas.yml
+
+- name: Clean up gatekeeper files from remote
+  ansible.builtin.file:
+    path: "{{ homelab_dir }}/{{ item }}"
+    state: absent
+  loop:
+    - required-labels.yml
+    - mini-replicas.yml
+    - namespaces.yml
+    - replicas.yml

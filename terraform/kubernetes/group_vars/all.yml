@@ -27,3 +27,5 @@ api_gtw_version: "v1.6.2"
 api_gtw_url: "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref={{ api_gtw_version}}"
 api_gtw_fabric_url: "https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/crds.yaml"
 api_gtw_deploy_url: "https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.6.2/deploy/default/deploy.yaml"
+
+opa_gatekeeper_url: "https://raw.githubusercontent.com/killer-sh/cks-course-environment/refs/heads/master/course-content/opa/gatekeeper.yaml"

@@ -9,10 +9,14 @@
 
 - name: copy app folders to remote
   ansible.builtin.copy:
-    src: "{{ item }}"
+    src: "apps/{{ item }}"
     dest: "{{ homelab_dir }}"
     mode: "0755"
     owner: ubuntu
     group: ubuntu
   loop:
     - linking-app.yaml
+# - name: Just for test - list files in homelab_dir
+#   ansible.builtin.command: kubectl create ns linkding-ns
+#   environment:
+#     KUBECONFIG: "{{ kube_config_file }}"

@@ -1,9 +1,9 @@
 ---
-- import_tasks: 01-metal-lb.yml
-- import_tasks: 02-gateway-api.yml
-- import_tasks: 03-install-argocd.yml
-- import_tasks: 04-taints.yml
-- import_tasks: 05-apps-files.yml
-- import_tasks: 06-create-namespaces.yml
-- import_tasks: 07-tls-certificate.yml
-- import_tasks: 08-deploy-apps.yml
+- import_tasks: metal-lb.yml
+- import_tasks: gateway-api.yml
+- import_tasks: install-argocd.yml
+- import_tasks: taints.yml
+- import_tasks: apps-files.yml
+- import_tasks: policies.yml
+- import_tasks: deploy-apps.yml
+- import_tasks: tls-certificate.yml

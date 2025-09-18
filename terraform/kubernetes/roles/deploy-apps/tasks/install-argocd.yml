@@ -20,18 +20,18 @@
     namespace: argocd
     kubeconfig: "{{ kube_config_file }}"
 
-- name: Change the argocd-server service type to LoadBalancer
-  kubernetes.core.k8s:
-    state: present
-    namespace: argocd
-    kind: Service
-    api_version: v1
-    name: argocd-server
-    merge_type: strategic-merge
-    definition:
-      spec:
-        type: LoadBalancer
-    kubeconfig: "{{ kube_config_file }}"
+# - name: Change the argocd-server service type to LoadBalancer
+#   kubernetes.core.k8s:
+#     state: present
+#     namespace: argocd
+#     kind: Service
+#     api_version: v1
+#     name: argocd-server
+#     merge_type: strategic-merge
+#     definition:
+#       spec:
+#         type: LoadBalancer
+#     kubeconfig: "{{ kube_config_file }}"
 
 - name: Install argocd cli
   block:

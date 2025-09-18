@@ -29,15 +29,39 @@
     provider: selfsigned
     selfsigned_not_after: "+365d"
 
-- name: Slurp private key
-  slurp:
+- name: Slurp private key # to base64 encode
+  ansible.builtin.slurp:
     src: "{{ tls_dir }}/tls.key"
   register: key_file
 
-- name: Slurp certificate
-  slurp:
+- name: Slurp certificate # to base64 encode
+  ansible.builtin.slurp:
     src: "{{ tls_dir }}/tls.crt"
   register: crt_file
+
+- name: Wait until linkding-ns namespace exists
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: linkding-ns
+  register: linkding_ns
+  until: linkding_ns.resources | length > 0
+  retries: 10
+  delay: 5
+
+- name: Create TLS secret in Kubernetes
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-secret
+        namespace: linkding-ns
+      type: kubernetes.io/tls
+      data:
+        tls.key: "{{ key_file.content }}"
+        tls.crt: "{{ crt_file.content }}"
 
 - name: Create TLS secret in Kubernetes
   kubernetes.core.k8s:

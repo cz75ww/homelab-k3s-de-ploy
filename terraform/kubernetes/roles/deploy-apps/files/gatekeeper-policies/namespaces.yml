@@ -1,0 +1,20 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: ns-must-have-env
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Namespace"]
+    excludedNamespaces:
+      - default
+      - kube-system
+      - argocd
+      - metallb-system
+      - gatekeeper-system
+      - kube-node-lease
+      - kube-public
+      - nginx-gateway
+  parameters:
+    labels: ["environment", "team"]
