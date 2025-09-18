@@ -8,7 +8,7 @@
 
 
 ## 📌 Motivation
-This project is a **Kubernetes homelab** I built while preparing for the **Certified Kubernetes Administrator (CKA)** certification.  
+This project is a **Kubernetes homelab** I built while preparing for the **CKA and CKS** certifications.  
 It uses **Terraform** and **Ansible** to provision and configure a **K3s cluster**, with **Argo CD** and **Helm** handling GitOps-based application deployment.  
 
 A practical playground for **automation**, **GitOps**, and **real-world Kubernetes operations**.
@@ -16,7 +16,7 @@ A practical playground for **automation**, **GitOps**, and **real-world Kubernet
 ## Requirements
 
 **Note:** Due to limited hardware resources, I configured my environment on a mini PC equipped with 16 GB of RAM and a single CPU with 4 cores.  
-This code can be used as a base or starting point to deploy any environment tailored to your business needs.
+This code can be used as a base or starting point to deploy your study environment to get the main  knowledges about k8s functionality and get CKA and CKS certifications
 
 - Terraform v1 or later  
 - Ansible 2.9 or later  
